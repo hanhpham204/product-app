@@ -1,0 +1,54 @@
+const Product = require('../models/productModel');
+const { v4: uuidv4 } = require('uuid');
+
+exports.index = async (req, res) => {
+  const products = await Product.getAll();
+  res.render('products/index', { products });
+};
+
+exports.createForm = (req, res) => {
+  res.render('products/create');
+};
+
+exports.create = async (req, res) => {
+  const file = req.file;
+  const product = {
+    id: uuidv4(),
+    name: req.body.name,
+    price: Number(req.body.price),
+    unit_in_stock: Number(req.body.unit_in_stock),
+    url_image: "/uploads/" + file.filename
+  };
+
+  await Product.create(product);
+  res.redirect('/');
+};
+
+exports.editForm = async (req, res) => {
+  const product = await Product.getById(req.params.id);
+  res.render('products/edit', { product });
+};
+
+exports.update = async (req, res) => {
+  const file = req.file;
+  const product = {
+    id: req.params.id,
+    name: req.body.name,
+    price: Number(req.body.price),
+    unit_in_stock: Number(req.body.unit_in_stock),
+    url_image: file ? "/uploads/" + file.filename : req.body.old_image
+  };
+
+  await Product.update(product);
+  res.redirect('/');
+};
+
+exports.delete = async (req, res) => {
+  await Product.delete(req.params.id);
+  res.redirect('/');
+};
+
+exports.detail = async (req, res) => {
+  const product = await Product.getById(req.params.id);
+  res.render('products/detail', { product });
+};

@@ -13,6 +13,22 @@ exports.getById = async (id) => {
     Key: { id }
   }).promise();
   return data.Item;
+}; 
+
+exports.search = async (keyword) => {
+  const params = {
+    TableName: TABLE,
+    FilterExpression: "contains(#name, :keyword)",
+    ExpressionAttributeNames: {
+      "#name": "name"
+    },
+    ExpressionAttributeValues: {
+      ":keyword": keyword
+    }
+  };
+
+  const data = await db.scan(params).promise();
+  return data.Items;
 };
 
 exports.create = async (product) => {

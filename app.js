@@ -2,6 +2,12 @@ const express = require('express');
 const path = require('path');
 const app = express();
 
+
+app.use((req, res, next) => {
+  res.locals.query = req.query;
+  next();
+});
+
 const productRoutes = require('./routes/productRoutes');
 
 app.set('view engine', 'ejs');
